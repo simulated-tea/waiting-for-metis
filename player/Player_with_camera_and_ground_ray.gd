@@ -13,19 +13,21 @@ export(float,10.0, 50.0) var jump_height = 25
 export(float,1.0, 10.0) var mass = 8.0
 export(float,0.1, 3.0, 0.1) var gravity_scl = 1.0
 
+#controls
+export(int, 10, 120) var restrict_view_angle = 90
+
 #instances ref
 onready var player_cam = $Camera
-onready var player_hand = $Arm
 onready var ground_ray = $GroundRay
 
 #variables
 var mouse_motion = Vector2()
+var mouse_event = null
 var gravity_speed = 0
 
 func _ready():
     Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
     ground_ray.enabled = true
-    pass
 
 
 func _physics_process(delta):
@@ -33,8 +35,8 @@ func _physics_process(delta):
     #camera and body rotation
     rotate_y(deg2rad(20)* - mouse_motion.x * sensitivity_x * delta)
     player_cam.rotate_x(deg2rad(20) * - mouse_motion.y * sensitivity_y * delta)
-    player_cam.rotation.x = clamp(player_cam.rotation.x, deg2rad(-47), deg2rad(47))
-    player_hand.rotation.x = lerp(player_hand.rotation.x, player_cam.rotation.x, 0.2)
+    player_cam.rotation.x = clamp(player_cam.rotation.x, deg2rad(-restrict_view_angle), deg2rad(restrict_view_angle))
+    #player_hand.rotation.x = lerp(player_hand.rotation.x, player_cam.rotation.x, 0.2)
     mouse_motion = Vector2()
     
     #gravity
@@ -49,6 +51,11 @@ func _physics_process(delta):
     if Input.is_action_just_pressed("space") and ground_ray.is_colliding():
         velocity.y = jump_height
     
+    #interaction
+    if mouse_event && mouse_event.button_index == 1 && mouse_event.pressed:
+        
+        pass
+    mouse_event = null
     gravity_speed = move_and_slide(velocity).y
 
 
@@ -57,6 +64,9 @@ func _input(event):
     
     if event is InputEventMouseMotion:
         mouse_motion = event.relative
+    
+    if event is InputEventMouseButton:
+        mouse_event = event
 
 
 func _axis():
