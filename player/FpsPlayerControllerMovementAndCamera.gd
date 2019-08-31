@@ -1,5 +1,7 @@
 extends KinematicBody
 
+class_name FpsPlayerControllerMovementAndCamera
+
 #constants
 const GRAVITY = 9.8
 
@@ -31,7 +33,6 @@ func _ready():
 
 
 func _physics_process(delta):
-    
     #camera and body rotation
     rotate_y(deg2rad(20)* - mouse_motion.x * sensitivity_x * delta)
     player_cam.rotate_x(deg2rad(20) * - mouse_motion.y * sensitivity_y * delta)
@@ -59,9 +60,7 @@ func _physics_process(delta):
     gravity_speed = move_and_slide(velocity).y
 
 
-
 func _input(event):
-    
     if event is InputEventMouseMotion:
         mouse_motion = event.relative
     
@@ -72,6 +71,7 @@ func _input(event):
 func _axis():
     var direction = Vector3()
     
+    # TODO: add respect for keymapping, ie switch to configured events?
     if Input.is_key_pressed(KEY_W):
         direction -= get_global_transform().basis.z.normalized()
         
